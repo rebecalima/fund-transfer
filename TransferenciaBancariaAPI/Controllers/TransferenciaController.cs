@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
+using TransferenciaBancariaAPI.Interface;
+using TransferenciaBancariaAPI.Models;
+using TransferenciaBancariaAPI.Services;
 
 namespace TransferenciaBancariaAPI.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/transfer")]
 public class TransferenciaController : ControllerBase
 {
     private readonly ILogger<TransferenciaController> _logger;
@@ -16,8 +19,18 @@ public class TransferenciaController : ControllerBase
     [HttpGet(Name = "GetTransferencia")]
     public string Get()
     {
-        _logger.LogInformation("Getting calcule");
+        _logger.LogError("Hey");
 
         return "OK";
+    }
+
+    [HttpPost(Name = "PostTransferencia")]
+    public void Post([FromServices] IMessageService service)
+    {
+        IMessage message = new Message("An new message.");
+        string queue = "account-transfer-pending";
+        var producer = new ProducerService(service);
+        producer.enqueue(message, queue);
+        _logger.LogInformation($"A new message was published on queue {queue}");
     }
 }

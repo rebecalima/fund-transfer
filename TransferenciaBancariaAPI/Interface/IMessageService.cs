@@ -1,7 +1,9 @@
+using RabbitMQ.Client;
+
 namespace TransferenciaBancariaAPI.Interface
 {
     public interface IMessageService
     {
-        bool Enqueue(string message);
+        public IModel _channel { get; }
     }
 }

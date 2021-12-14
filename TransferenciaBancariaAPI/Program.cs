@@ -1,5 +1,7 @@
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
+using TransferenciaBancariaAPI.Interface;
+using TransferenciaBancariaAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +22,9 @@ builder.Host.UseSerilog((ctx, lc) => lc
             AutoRegisterTemplate = true,
             IndexFormat = $"transferencia-bancaria-logs-{DateTime.UtcNow:yyyy-MM}"
         }));
+
+builder.Services.AddHostedService<ConsumerService>();
+builder.Services.AddSingleton<IMessageService, MessageService>();
 
 var app = builder.Build();
 

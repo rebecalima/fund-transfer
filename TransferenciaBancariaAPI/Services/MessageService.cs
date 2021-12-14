@@ -1,18 +1,37 @@
+using RabbitMQ.Client;
 using TransferenciaBancariaAPI.Interface;
 
-namespace TransferenciaBancariaAPI.Service
+namespace TransferenciaBancariaAPI.Services
 {
     class MessageService : IMessageService
     {
-        private readonly ILogger<MessageService> _logger;
-        public MessageService(ILogger<MessageService> logger)
+        private ConnectionFactory _factory;
+        private IConnection _conn;
+        public IModel _channel { get; }
+        public MessageService()
         {
-            _logger = logger;
-        }
-        public bool Enqueue(string message)
-        {
-            _logger.LogInformation("Enqueue");
-            return true;
+            _factory = new ConnectionFactory()
+            {
+                HostName = "localhost",
+                Port = AmqpTcpEndpoint.UseDefaultPort,
+                UserName = "guest",
+                Password = "guest"
+            };
+            _conn = _factory.CreateConnection();
+            _channel = _conn.CreateModel();
+            _channel.QueueDeclare(
+                queue: "account-transfer-pending",
+                durable: false,
+                exclusive: false,
+                autoDelete: false,
+                arguments: null);
+            _channel.QueueDeclare(
+                queue: "account-transfer-failed",
+                durable: false,
+                exclusive: false,
+                autoDelete: false,
+                arguments: null);
+
         }
     }
 }

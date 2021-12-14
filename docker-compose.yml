@@ -32,10 +32,19 @@ services:
     image: rabbitmq:3-management
     hostname: rabbitmq
     ports:
-      - 15672:15672
+      - "4369:4369"
+      - "5671:5671"
+      - "5672:5672"
+      - "25672:25672"
+      - "15671:15671"
+      - "15672:15672"
+    networks:
+      - rabbitmq_go_net
 
 networks:
   elastic:
+    driver: bridge
+  rabbitmq_go_net:
     driver: bridge
 
 volumes:
