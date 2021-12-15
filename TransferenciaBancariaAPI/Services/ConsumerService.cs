@@ -10,10 +10,12 @@ namespace TransferenciaBancariaAPI.Services
     {
         private readonly IMessageService _service;
         private readonly ILogger<ConsumerService> _logger;
-        public ConsumerService(IMessageService service, ILogger<ConsumerService> logger)
+        private readonly IElasticSearchService _elasticClient;
+        public ConsumerService(IMessageService service, ILogger<ConsumerService> logger, IElasticSearchService elasticClient)
         {
             _service = service;
             _logger = logger;
+            _elasticClient = elasticClient;
         }
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -23,8 +25,13 @@ namespace TransferenciaBancariaAPI.Services
             {
                 var contentArray = EventArgs.Body.ToArray();
                 var contentString = Encoding.UTF8.GetString(contentArray);
+                var transferencia = JsonConvert.DeserializeObject<Transferencia>(contentString);
+                transferencia.StatusMessage = Status.PROCESSING;
+                var message = JsonConvert.SerializeObject(transferencia);
 
-                _logger.LogInformation($"A new message was consumed. Message: {contentString}");
+                // _logger.LogInformation($"A new message was consumed. Message: {message}");
+                _elasticClient._client.Index(transferencia, idx => idx.Index("transferencia"));
+                _logger.LogInformation(message);
                 _service._channel.BasicAck(EventArgs.DeliveryTag, false);
 
             };
