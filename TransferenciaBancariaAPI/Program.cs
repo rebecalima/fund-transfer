@@ -26,6 +26,7 @@ builder.Host.UseSerilog((ctx, lc) => lc
 builder.Services.AddHostedService<ConsumerService>();
 builder.Services.AddSingleton<IMessageService, MessageService>();
 builder.Services.AddSingleton<IElasticSearchService, ElasticSearchService>();
+builder.Services.AddSingleton<ITransferenciaService, TransferenciaService>();
 
 var app = builder.Build();
 

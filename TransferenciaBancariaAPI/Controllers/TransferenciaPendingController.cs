@@ -22,14 +22,15 @@ public class TransferenciaPendingController : ControllerBase
     {
         _logger.LogError("Hey");
 
-        return "OK";
+        return "ok";
     }
 
     [HttpPost(Name = "PostTransferenciaMessage")]
-    public IActionResult Post([FromServices] IMessageService service, [FromBody] Transferencia transferencia)
+    public IActionResult Post([FromServices] IMessageService service, [FromBody] TransferenciaData transferenciaData)
     {
-        if (transferencia is not null)
+        if (transferenciaData is not null)
         {
+            var transferencia = new Transferencia(transferenciaData);
             var elasticClient = new ElasticSearchService();
             elasticClient._client.Index(transferencia, idx => idx.Index("transferencia"));
             var transferenciaJson = JsonSerializer.Serialize(transferencia);
