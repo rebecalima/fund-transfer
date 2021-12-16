@@ -1,6 +1,6 @@
-using TransferenciaBancariaAPI.Interface;
+using FundTransferAPI.Interface;
 
-namespace TransferenciaBancariaAPI;
+namespace FundTransferAPI;
 
 public static class StatusType
 {
@@ -9,19 +9,19 @@ public static class StatusType
     public static readonly string CONFIRMED = "Confirmed";
     public static readonly string ERROR = "Error";
 }
-public class Transferencia : TransferenciaData
+public class Transfer : TransferBase
 {
     public Guid Id { get; set; }
     public DateTime Date { get; set; }
     public string Status { get; set; }
     public string? Error { get; set; }
 
-    public Transferencia() { }
-    public Transferencia(TransferenciaData transferencia)
+    public Transfer() { }
+    public Transfer(TransferBase transfer)
     {
-        AccountDestination = transferencia.AccountDestination;
-        AccountOrigin = transferencia.AccountOrigin;
-        Value = transferencia.Value;
+        AccountDestination = transfer.AccountDestination;
+        AccountOrigin = transfer.AccountOrigin;
+        Value = transfer.Value;
         Date = DateTime.UtcNow.Date;
         Id = Guid.NewGuid();
         Status = StatusType.INQUEUE;

@@ -1,7 +1,7 @@
 using System.Net;
-using TransferenciaBancariaAPI.Models;
+using FundTransferAPI.Models;
 
-namespace TransferenciaBancariaAPI.Clients
+namespace FundTransferAPI.Clients
 {
     public class AcessoClientAPI
     {

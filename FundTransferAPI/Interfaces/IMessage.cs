@@ -1,4 +1,4 @@
-namespace TransferenciaBancariaAPI.Interface
+namespace FundTransferAPI.Interface
 {
     public interface IMessage
     {

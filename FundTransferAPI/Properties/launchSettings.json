@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "TransferenciaBancariaAPI": {
+    "FundTransferAPI": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,

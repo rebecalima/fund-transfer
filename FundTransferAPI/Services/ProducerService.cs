@@ -1,8 +1,8 @@
-using TransferenciaBancariaAPI.Interface;
+using FundTransferAPI.Interface;
 
-namespace TransferenciaBancariaAPI.Services
+namespace FundTransferAPI.Services
 {
-    class ProducerService
+    class ProducerService : IProducerService
     {
         private readonly IMessageService _service;
 

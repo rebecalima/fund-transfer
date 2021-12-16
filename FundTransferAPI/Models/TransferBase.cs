@@ -1,6 +1,6 @@
-namespace TransferenciaBancariaAPI.Interface
+namespace FundTransferAPI.Interface
 {
-    public class TransferenciaData
+    public class TransferBase
     {
         public string AccountDestination { get; set; }
         public string AccountOrigin { get; set; }

@@ -1,7 +1,7 @@
 using RabbitMQ.Client;
-using TransferenciaBancariaAPI.Interface;
+using FundTransferAPI.Interface;
 
-namespace TransferenciaBancariaAPI.Services
+namespace FundTransferAPI.Services
 {
     class MessageService : IMessageService
     {

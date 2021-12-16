@@ -1,6 +1,6 @@
 using Nest;
 
-namespace TransferenciaBancariaAPI.Interface
+namespace FundTransferAPI.Interface
 {
     public interface IElasticSearchService
     {

@@ -1,7 +1,7 @@
 using System.Text;
-using TransferenciaBancariaAPI.Interface;
+using FundTransferAPI.Interface;
 
-namespace TransferenciaBancariaAPI.Models
+namespace FundTransferAPI.Models
 {
     class Message : IMessage
     {

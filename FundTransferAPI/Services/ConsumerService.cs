@@ -1,27 +1,27 @@
-using TransferenciaBancariaAPI.Interface;
+using FundTransferAPI.Interface;
 using RabbitMQ.Client.Events;
 using System.Text;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 
-namespace TransferenciaBancariaAPI.Services
+namespace FundTransferAPI.Services
 {
     class ConsumerService : BackgroundService
     {
         private readonly IMessageService _service;
         private readonly ILogger<ConsumerService> _logger;
         private readonly IElasticSearchService _elasticClient;
-        private readonly ITransferenciaService _transferenciaService;
+        private readonly ITransferService _transferService;
         public ConsumerService(
             IMessageService service,
             ILogger<ConsumerService> logger,
             IElasticSearchService elasticClient,
-            ITransferenciaService transferenciaService)
+            ITransferService transferService)
         {
             _service = service;
             _logger = logger;
             _elasticClient = elasticClient;
-            _transferenciaService = transferenciaService;
+            _transferService = transferService;
         }
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -31,14 +31,14 @@ namespace TransferenciaBancariaAPI.Services
             {
                 var contentArray = EventArgs.Body.ToArray();
                 var contentString = Encoding.UTF8.GetString(contentArray);
-                var transferencia = JsonConvert.DeserializeObject<Transferencia>(contentString);
-                transferencia.Status = StatusType.PROCESSING;
-                var message = JsonConvert.SerializeObject(transferencia);
+                var transfer = JsonConvert.DeserializeObject<Transfer>(contentString);
+                transfer.Status = StatusType.PROCESSING;
+                var message = JsonConvert.SerializeObject(transfer);
 
                 _logger.LogInformation($"A new message was consumed. Message: {message}");
 
-                _elasticClient._client.Index(transferencia, idx => idx.Index("transferencia"));
-                _transferenciaService.transferValue(transferencia);
+                _elasticClient._client.Index(transfer, idx => idx.Index("transfer"));
+                _transferService.transferValue(transfer);
 
                 _service._channel.BasicAck(EventArgs.DeliveryTag, false);
 

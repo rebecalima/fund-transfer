@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace TransferenciaBancariaAPI.Tests;
+namespace FundTransferAPI.Tests;
 
 public class UnitTest1
 {

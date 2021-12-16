@@ -1,4 +1,4 @@
-namespace TransferenciaBancariaAPI.Models
+namespace FundTransferAPI.Models
 {
     public class AccountPost
     {
