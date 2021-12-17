@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FundTransferAPI", "FundTransferAPI\FundTransferAPI.csproj", "{AB5294D7-1459-4842-929C-03EDD13D2D12}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FundTransferAPI.Tests", "FundTransferAPI.Tests\FundTransferAPI.Tests.csproj", "{1CADA372-846E-4255-8B68-137D5F7018C3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AB5294D7-1459-4842-929C-03EDD13D2D12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB5294D7-1459-4842-929C-03EDD13D2D12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB5294D7-1459-4842-929C-03EDD13D2D12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB5294D7-1459-4842-929C-03EDD13D2D12}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CADA372-846E-4255-8B68-137D5F7018C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CADA372-846E-4255-8B68-137D5F7018C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CADA372-846E-4255-8B68-137D5F7018C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CADA372-846E-4255-8B68-137D5F7018C3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
