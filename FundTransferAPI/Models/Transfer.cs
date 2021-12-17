@@ -13,7 +13,7 @@ public class Transfer : TransferBase
 {
     public Guid Id { get; set; }
     public DateTime Date { get; set; }
-    public string Status { get; set; }
+    public string? Status { get; set; }
     public string? Error { get; set; }
 
     public Transfer() { }
@@ -25,5 +25,15 @@ public class Transfer : TransferBase
         Date = DateTime.UtcNow.Date;
         Id = Guid.NewGuid();
         Status = StatusType.INQUEUE;
+    }
+
+    public void changeStatus(string statusType)
+    {
+        Status = statusType;
+    }
+    public void changeStatus(string statusType, string messageError)
+    {
+        Status = statusType;
+        Error = messageError;
     }
 }

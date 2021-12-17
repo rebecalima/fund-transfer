@@ -5,7 +5,7 @@ namespace FundTransferAPI.Services
 {
     public class ElasticSearchService : IElasticSearchService
     {
-        public IElasticClient _client { get; }
+        private IElasticClient _client { get; }
         public ElasticSearchService()
         {
             var indexName = "transfer";
@@ -16,5 +16,9 @@ namespace FundTransferAPI.Services
             index => index.Map<Transfer>(x => x.AutoMap()));
         }
 
+        public IElasticClient GetClient()
+        {
+            return _client;
+        }
     }
 }

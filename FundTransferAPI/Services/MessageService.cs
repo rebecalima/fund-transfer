@@ -7,7 +7,7 @@ namespace FundTransferAPI.Services
     {
         private ConnectionFactory _factory;
         private IConnection _conn;
-        public IModel _channel { get; }
+        private IModel _channel { get; }
         public MessageService()
         {
             _factory = new ConnectionFactory()
@@ -32,6 +32,11 @@ namespace FundTransferAPI.Services
                 autoDelete: false,
                 arguments: null);
 
+        }
+
+        public IModel getChannel()
+        {
+            return _channel;
         }
     }
 }

@@ -1,9 +1,10 @@
 using System.Net;
+using FundTransferAPI.Interface;
 using FundTransferAPI.Models;
 
 namespace FundTransferAPI.Clients
 {
-    public class AcessoClientAPI
+    public class AcessoClientAPI : IClientAPI
     {
         private HttpClient _client;
         public AcessoClientAPI()
@@ -12,32 +13,28 @@ namespace FundTransferAPI.Clients
             _client.BaseAddress = new Uri("https://acessoaccount.herokuapp.com/api");
         }
 
-        public async Task<HttpResponseMessage> GetAccount(string accountNumber, string endpoint = "api/Account")
+        public async Task<HttpResponseMessage> GetAccount(string accountNumber)
         {
-            var response = await _client.GetAsync($"{endpoint}/{accountNumber}");
+            var response = await _client.GetAsync($"api/Account/{accountNumber}");
             return response;
         }
 
-        public async Task<HttpResponseMessage> PostAccount(AccountPost account, string endpoint = "api/Account")
+        public async Task<HttpResponseMessage> PostAccount(AccountAcesso account)
         {
-            var response = await _client.PostAsJsonAsync(endpoint, account);
+            var response = await _client.PostAsJsonAsync("api/Account", account);
+
+            if (response.StatusCode == HttpStatusCode.OK)
+                return response;
+
+            var error = "There was a problem on the client.";
 
             if (response.StatusCode == HttpStatusCode.NotFound)
-            {
-                throw new Exception($"The account {account.AccountNumber} to operation {account.Type} not exists.");
-            }
+                error = $"The account {account.AccountNumber} to operation {account.Type} not exists.";
 
             if (response.StatusCode == HttpStatusCode.BadRequest)
-            {
-                throw new Exception($"The account {account.AccountNumber} not has enough balance.");
-            }
+                error = $"The account {account.AccountNumber} not has enough balance to operation {account.Type}.";
 
-            if (response.StatusCode == HttpStatusCode.InternalServerError)
-            {
-                throw new Exception();
-            }
-
-            return response;
+            throw new Exception(error);
         }
 
     }

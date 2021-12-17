@@ -2,6 +2,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using FundTransferAPI.Interface;
 using FundTransferAPI.Models;
+using Nest;
 
 namespace FundTransferAPI.Controllers;
 
@@ -10,7 +11,7 @@ namespace FundTransferAPI.Controllers;
 public class TransferController : ControllerBase
 {
     private readonly ILogger<TransferController> _logger;
-    private readonly IElasticSearchService _elasticClient;
+    private readonly IElasticClient _elasticClient;
     private readonly IProducerService _producer;
 
     public TransferController(
@@ -19,14 +20,14 @@ public class TransferController : ControllerBase
          IProducerService producer)
     {
         _logger = logger;
-        _elasticClient = elasticClient;
+        _elasticClient = elasticClient.GetClient();
         _producer = producer;
     }
 
     [HttpGet(Name = "GetTransferStatus")]
     public IActionResult Get(Guid id)
     {
-        var doc = _elasticClient._client.Get<Transfer>(id).Source;
+        var doc = _elasticClient.Get<Transfer>(id).Source;
 
         if (doc is null)
             return NotFound();
@@ -49,7 +50,7 @@ public class TransferController : ControllerBase
             return BadRequest("Information about transfer is required.");
 
         var transfer = new Transfer(transferBase);
-        _elasticClient._client.Index(transfer, idx => idx.Index("transfer"));
+        _elasticClient.Index(transfer, idx => idx.Index("transfer"));
         var transferSerialized = JsonSerializer.Serialize(transfer);
 
         IMessage message = new Message(transferSerialized);

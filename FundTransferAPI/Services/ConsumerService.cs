@@ -3,14 +3,15 @@ using RabbitMQ.Client.Events;
 using System.Text;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
+using Nest;
 
 namespace FundTransferAPI.Services
 {
     class ConsumerService : BackgroundService
     {
-        private readonly IMessageService _service;
+        private readonly IModel _service;
         private readonly ILogger<ConsumerService> _logger;
-        private readonly IElasticSearchService _elasticClient;
+        private readonly IElasticClient _elasticClient;
         private readonly ITransferService _transferService;
         public ConsumerService(
             IMessageService service,
@@ -18,32 +19,33 @@ namespace FundTransferAPI.Services
             IElasticSearchService elasticClient,
             ITransferService transferService)
         {
-            _service = service;
+            _service = service.getChannel();
             _logger = logger;
-            _elasticClient = elasticClient;
+            _elasticClient = elasticClient.GetClient();
             _transferService = transferService;
         }
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
             string queue = "account-transfer-pending";
-            var consumer = new EventingBasicConsumer(_service._channel);
+            var consumer = new EventingBasicConsumer(_service);
             consumer.Received += (sender, EventArgs) =>
             {
                 var contentArray = EventArgs.Body.ToArray();
                 var contentString = Encoding.UTF8.GetString(contentArray);
                 var transfer = JsonConvert.DeserializeObject<Transfer>(contentString);
-                transfer.Status = StatusType.PROCESSING;
-                var message = JsonConvert.SerializeObject(transfer);
 
+                transfer.changeStatus(StatusType.PROCESSING);
+
+                var message = JsonConvert.SerializeObject(transfer);
                 _logger.LogInformation($"A new message was consumed. Message: {message}");
 
-                _elasticClient._client.Index(transfer, idx => idx.Index("transfer"));
+                _elasticClient.Index(transfer, idx => idx.Index("transfer"));
                 _transferService.transferValue(transfer);
 
-                _service._channel.BasicAck(EventArgs.DeliveryTag, false);
+                _service.BasicAck(EventArgs.DeliveryTag, false);
 
             };
-            _service._channel.BasicConsume(queue, false, consumer);
+            _service.BasicConsume(queue, false, consumer);
             return Task.CompletedTask;
         }
     }

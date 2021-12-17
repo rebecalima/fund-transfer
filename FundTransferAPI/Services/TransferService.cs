@@ -2,62 +2,81 @@ using System.Net;
 using FundTransferAPI.Clients;
 using FundTransferAPI.Interface;
 using FundTransferAPI.Models;
+using Nest;
 
 namespace FundTransferAPI.Services
 {
     public class TransferService : ITransferService
     {
-        private AcessoClientAPI clientAPI;
+        private IClientAPI _clientAPI;
         private ILogger<TransferService> _logger;
-        private IElasticSearchService _elasticClient;
+        private IElasticClient _elasticClient;
 
-        public TransferService(ILogger<TransferService> logger, IElasticSearchService elasticClient)
+        public TransferService(
+            ILogger<TransferService> logger,
+            IElasticSearchService elasticClient,
+            IClientAPI clientAPI)
         {
             _logger = logger;
-            _elasticClient = elasticClient;
-            clientAPI = new AcessoClientAPI();
+            _elasticClient = elasticClient.GetClient();
+            _clientAPI = clientAPI;
         }
 
-        public async void transferValue(Transfer transfer)
+        public async Task<bool> transferValue(Transfer transfer)
         {
             try
             {
-                if (await accountNotExists(transfer.AccountDestination))
-                {
+                if (transfer.AccountDestination is not null &&
+                    await accountNotExists(transfer.AccountDestination))
                     throw new Exception($"The account destination {transfer.AccountDestination} not exists.");
-                }
 
-                await clientAPI.PostAccount(new AccountPost
-                {
-                    AccountNumber = transfer.AccountOrigin,
-                    Value = transfer.Value,
-                    Type = "Debit"
-                });
+                postToAccounts(transfer);
+                confirmTransaction(transfer);
 
-                await clientAPI.PostAccount(new AccountPost
-                {
-                    AccountNumber = transfer.AccountDestination,
-                    Value = transfer.Value,
-                    Type = "Credit"
-                });
-
-                _logger.LogInformation("Operation completed successfully");
-                transfer.Status = StatusType.CONFIRMED;
-                _elasticClient._client.Index(transfer, idx => idx.Index("transfer"));
+                return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
-                transfer.Status = StatusType.ERROR;
-                transfer.Error = ex.Message;
-                _elasticClient._client.Index(transfer, idx => idx.Index("transfer"));
+                registerError(transfer, ex.Message);
+                return false;
             }
 
+        }
+
+        private void registerError(Transfer transfer, string messageError)
+        {
+            transfer.changeStatus(StatusType.ERROR, messageError);
+            _elasticClient.Index(transfer, idx => idx.Index("transfer"));
+            _logger.LogError(messageError);
+        }
+
+        private void confirmTransaction(Transfer transfer)
+        {
+            transfer.changeStatus(StatusType.CONFIRMED);
+            _elasticClient.Index(transfer, idx => idx.Index("transfer"));
+            _logger.LogInformation("Operation completed successfully");
+        }
+
+        private async void postToAccounts(Transfer transfer)
+        {
+            await _clientAPI.PostAccount(new AccountAcesso
+            {
+                AccountNumber = transfer.AccountOrigin,
+                Value = transfer.Value,
+                Type = "Debit"
+            });
+
+            await _clientAPI.PostAccount(new AccountAcesso
+            {
+                AccountNumber = transfer.AccountDestination,
+                Value = transfer.Value,
+                Type = "Credit"
+            });
         }
 
         private async Task<bool> accountNotExists(string accountNumber)
         {
-            var response = await clientAPI.GetAccount(accountNumber);
+            var response = await _clientAPI.GetAccount(accountNumber);
 
             return response.StatusCode != HttpStatusCode.OK;
 

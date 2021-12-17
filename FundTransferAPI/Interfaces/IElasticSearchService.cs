@@ -4,6 +4,6 @@ namespace FundTransferAPI.Interface
 {
     public interface IElasticSearchService
     {
-        public IElasticClient _client { get; }
+        public IElasticClient GetClient();
     }
 }

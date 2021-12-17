@@ -2,6 +2,6 @@ namespace FundTransferAPI.Interface
 {
     public interface ITransferService
     {
-        public void transferValue(Transfer transfer);
+        public Task<bool> transferValue(Transfer transfer);
     }
 }
