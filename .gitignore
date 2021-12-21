@@ -3,6 +3,8 @@
 project.lock.json
 .DS_Store
 *.pyc
+coverage.json
+lcov.info
 
 # Visual Studio Code
 .vscode
