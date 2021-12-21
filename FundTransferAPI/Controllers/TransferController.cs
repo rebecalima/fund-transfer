@@ -60,7 +60,7 @@ public class TransferController : ControllerBase
 
         _logger.LogInformation($"A new message was published on queue {queue}");
 
-        return Ok(transferSerialized);
+        return Ok(new { transactionId = transfer.Id });
 
     }
 }
