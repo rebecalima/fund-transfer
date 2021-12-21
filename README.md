@@ -29,5 +29,5 @@ https://localhost:7253/swagger
 
 ## Unit tests
 ``` console
-dotnet test
+dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=./lcov.info
 ```

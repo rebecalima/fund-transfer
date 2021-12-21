@@ -26,13 +26,26 @@ namespace FundTransferAPI.Services
         {
             try
             {
-                if (transfer.AccountDestination is not null &&
+                if (transfer.AccountDestination is null ||
                     await accountNotExists(transfer.AccountDestination))
                     throw new Exception($"The account destination {transfer.AccountDestination} not exists.");
 
-                postToAccounts(transfer);
-                confirmTransaction(transfer);
 
+                await _clientAPI.PostAccount(new AccountAcesso
+                {
+                    AccountNumber = transfer.AccountOrigin,
+                    Value = transfer.Value,
+                    Type = "Debit"
+                });
+
+                await _clientAPI.PostAccount(new AccountAcesso
+                {
+                    AccountNumber = transfer.AccountDestination,
+                    Value = transfer.Value,
+                    Type = "Credit"
+                });
+
+                confirmTransaction(transfer);
                 return true;
             }
             catch (Exception ex)
@@ -40,7 +53,6 @@ namespace FundTransferAPI.Services
                 registerError(transfer, ex.Message);
                 return false;
             }
-
         }
 
         private void registerError(Transfer transfer, string messageError)
@@ -57,29 +69,10 @@ namespace FundTransferAPI.Services
             _logger.LogInformation("Operation completed successfully");
         }
 
-        private async void postToAccounts(Transfer transfer)
-        {
-            await _clientAPI.PostAccount(new AccountAcesso
-            {
-                AccountNumber = transfer.AccountOrigin,
-                Value = transfer.Value,
-                Type = "Debit"
-            });
-
-            await _clientAPI.PostAccount(new AccountAcesso
-            {
-                AccountNumber = transfer.AccountDestination,
-                Value = transfer.Value,
-                Type = "Credit"
-            });
-        }
-
         private async Task<bool> accountNotExists(string accountNumber)
         {
             var response = await _clientAPI.GetAccount(accountNumber);
-
             return response.StatusCode != HttpStatusCode.OK;
-
         }
     }
 }

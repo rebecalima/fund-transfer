@@ -28,6 +28,10 @@ builder.Services.AddSingleton<IElasticSearchService, ElasticSearchService>();
 builder.Services.AddSingleton<ITransferService, TransferService>();
 builder.Services.AddSingleton<IProducerService, ProducerService>();
 builder.Services.AddTransient<IClientAPI, AcessoClientAPI>();
+builder.Services.AddHttpClient(builder.Configuration["ClientAPI:Name"], c =>
+{
+    c.BaseAddress = new Uri((builder.Configuration["ClientAPI:Uri"]));
+});
 
 var app = builder.Build();
 
