@@ -13,20 +13,22 @@ namespace FundTransferAPI.Services
         private readonly ILogger<ConsumerService> _logger;
         private readonly IElasticClient _elasticClient;
         private readonly ITransferService _transferService;
+        private readonly string queue;
         public ConsumerService(
             IMessageService service,
             ILogger<ConsumerService> logger,
             IElasticSearchService elasticClient,
-            ITransferService transferService)
+            ITransferService transferService,
+            IConfiguration configuration)
         {
             _service = service.getChannel();
             _logger = logger;
             _elasticClient = elasticClient.GetClient();
             _transferService = transferService;
+            queue = configuration["RabbitConfiguration:queue"];
         }
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            string queue = "account-transfer-pending";
             var consumer = new EventingBasicConsumer(_service);
             consumer.Received += (sender, EventArgs) =>
             {

@@ -7,15 +7,18 @@ namespace FundTransferAPI.Clients
     public class AcessoClientAPI : IClientAPI
     {
         private HttpClient _client;
-        public AcessoClientAPI()
+        public AcessoClientAPI(IHttpClientFactory client, IConfiguration configuration)
         {
-            _client = new HttpClient();
-            _client.BaseAddress = new Uri("https://acessoaccount.herokuapp.com/api");
+            _client = client.CreateClient(configuration["ClientAPI:Name"]);
         }
 
         public async Task<HttpResponseMessage> GetAccount(string accountNumber)
         {
             var response = await _client.GetAsync($"api/Account/{accountNumber}");
+
+            if (response.StatusCode == HttpStatusCode.InternalServerError)
+                throw new Exception("There was a problem on the client.");
+
             return response;
         }
 
